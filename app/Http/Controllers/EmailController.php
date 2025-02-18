@@ -38,4 +38,31 @@ class EmailController extends Controller
    } */
 
    }
+
+   public function contactForm(){
+      return view('contact_form');
+   }
+
+   public function sendcontactForm(Request $request){
+      $request->validate([
+         'name'=> 'required',
+         'email'=> 'required|email',
+         'subject'=> 'required|min:5|max:100',
+         'message'=> 'required|min:10|max:255',
+         'attachment'=> 'required|mimes:pdf,doc,docx,xls,xlsx|max:5120',
+      ]);
+
+      $fileName = time() . "." .$request->file('attachment')->extension();
+      $request->file('attachment')->move('uploads', $fileName);
+
+      $toEmail = 'abdulrehmankhan5000@gmail.com';
+      
+      $response= Mail::to($toEmail)->send(new welcomeemail($request->all(),$fileName));
+
+      if($response){
+         return back()->with('success','Email Send Successfully');
+      }else{
+         return back()->with('error','Error occurs while send Email');
+      }
+   }
 }

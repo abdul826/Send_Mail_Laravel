@@ -8,23 +8,30 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Attachment;
 
 class welcomeemail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $mailMessage;
-    public $subject;
-    private $details;
+    // public $mailMessage;
+    // public $subject;
+    // private $details;
+
+    public $request;
+    public $fileName;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($message,$subject,$details)  // The value comes in constrctor from EmailController
+    public function __construct($request,$fileName)  // The value comes in constrctor from EmailController
     {
-        $this->mailMessage = $message;
-        $this->subject = $subject;
-        $this->details = $details;
+        // $this->mailMessage = $message;
+        // $this->subject = $subject;
+        // $this->details = $details;
+
+        $this->request = $request;
+        $this->fileName = $fileName;
     }
 
     /**
@@ -34,9 +41,9 @@ class welcomeemail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            // subject: 'Welcomeemail', -- If we write subject in this class then use this line 
+            subject: 'Contact Form',        //If we write subject in this class then use this line 
             // I have already create subject in My Controller and pass them in this class as a parameter in constructor
-            subject: $this->subject,
+            // subject: $this->subject,
         );
     }
 
@@ -54,11 +61,11 @@ class welcomeemail extends Mailable
             // text :  'mail.welcome_mail',    // -> Inside this view file just use {{$mailMessage}}
 
             // If the datamember is private or protected the use with
-            with:[
-                'name' => $this->details['name'],
-                'product' => $this->details['product'],
-                'price' => $this->details['price'],
-            ]
+            // with:[
+            //     'name' => $this->details['name'],
+            //     'product' => $this->details['product'],
+            //     'price' => $this->details['price'],
+            // ]
         );
     }
 
@@ -69,6 +76,16 @@ class welcomeemail extends Mailable
      */
     public function attachments(): array
     {
-        return [];
+        // return [];
+        // Create an array
+        $attachments = [];
+
+        if($this->fileName){
+            $attachments = [
+                Attachment::fromPath(public_path('/uploads/'.$this->fileName))
+            ];
+        }
+
+        return $attachments;
     }
 }

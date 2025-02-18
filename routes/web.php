@@ -8,3 +8,7 @@ Route::get('/', function () {
 });
 
 Route::get('/sendmail',[EmailController::class, 'sendMail']);
+
+Route::get('/contactform',[EmailController::class, 'contactForm']);
+
+Route::post('/sendcontactform',[EmailController::class, 'sendcontactForm'])->name('sendcontactform');
